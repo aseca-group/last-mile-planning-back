@@ -1,1 +1,1 @@
-rootProject.name = "wms-back"
+rootProject.name = "last-mile-planning-back"
