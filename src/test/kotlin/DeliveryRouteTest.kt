@@ -59,4 +59,16 @@ class DeliveryRouteTest {
         assertEquals(Status.DELIVERED, updatedDeliveryRoute.deliveries.first().status)
         assertEquals(Status.OUT_FOR_DELIVERY, updatedDeliveryRoute.deliveries[1].status)
     }
+
+    @Test
+    fun test06_updateCurrentDeliveryStatusShouldNotChangeTheStatusOfTheCurrentDeliveryIfThereIsNoCurrentDelivery() {
+        val delivery1 = Delivery(1, "Address 1")
+        val delivery2 = Delivery(2, "Address 2")
+        val deliveryRoute = DeliveryRoute(1, listOf(delivery1, delivery2))
+
+        val updatedDeliveryRoute = deliveryRoute.updateCurrentDeliveryStatus(Status.DELIVERED)
+
+        assertEquals(delivery1, updatedDeliveryRoute.deliveries.first())
+        assertEquals(delivery2, updatedDeliveryRoute.deliveries[1])
+    }
 }
