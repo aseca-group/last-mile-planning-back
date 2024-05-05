@@ -6,4 +6,3 @@ import kotlinx.serialization.Serializable
 class Delivery(val id: Int, val address: String, val status: Status = Status.PENDING) {
 }
 
-val deliveryStorage = mutableListOf<Delivery>()
