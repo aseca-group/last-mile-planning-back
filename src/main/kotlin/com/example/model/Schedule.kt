@@ -3,12 +3,12 @@ package com.example.model
 import kotlinx.serialization.Serializable
 
 @Serializable
-class DeliveryPlan(val id: Int, val deliveries: List<Delivery>) {
+class Schedule(val id: Int, val deliveries: List<Delivery>) {
 
 
-    fun start(): DeliveryPlan {
+    fun start(): Schedule {
         // update all deliveries to in transit and the first one to out for delivery
-        return DeliveryPlan(id, deliveries.mapIndexed { index, delivery ->
+        return Schedule(id, deliveries.mapIndexed { index, delivery ->
             if (index == 0) {
                 Delivery(delivery.id, delivery.address, Status.OUT_FOR_DELIVERY)
             } else {
@@ -23,7 +23,7 @@ class DeliveryPlan(val id: Int, val deliveries: List<Delivery>) {
     }
 
     // update the status of the current delivery and change the next delivery status to out for delivery
-    fun updateCurrentDeliveryStatus(status: Status): DeliveryPlan {
+    fun updateCurrentDeliveryStatus(status: Status): Schedule {
         val currentDelivery = currentDelivery()
         if (currentDelivery != null) {
             val updatedDeliveries = deliveries.mapIndexed { index, delivery ->
@@ -35,7 +35,7 @@ class DeliveryPlan(val id: Int, val deliveries: List<Delivery>) {
                     delivery
                 }
     }
-            return DeliveryPlan(id, updatedDeliveries)
+            return Schedule(id, updatedDeliveries)
         }
         return this
     }
@@ -49,4 +49,4 @@ class DeliveryPlan(val id: Int, val deliveries: List<Delivery>) {
     }
 }
 
-val deliveryPlanStorage = mutableListOf<DeliveryPlan>()
+val scheduleStorage = mutableListOf<Schedule>()
