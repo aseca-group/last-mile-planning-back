@@ -1,4 +1,4 @@
-package com.example.model
+package com.lastmile.models
 
 import kotlinx.serialization.Serializable
 

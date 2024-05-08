@@ -1,6 +1,6 @@
-package com.example
+package com.lastmile
 
-import com.example.plugins.*
+import com.lastmile.plugins.*
 import io.ktor.server.application.*
 
 fun main(args: Array<String>) {

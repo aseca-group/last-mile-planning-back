@@ -1,5 +1,5 @@
-import com.example.model.Delivery
-import com.example.model.Status
+import com.lastmile.models.Delivery
+import com.lastmile.models.Status
 import org.junit.Test
 import kotlin.test.assertEquals
 

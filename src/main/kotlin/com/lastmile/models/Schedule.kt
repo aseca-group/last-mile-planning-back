@@ -1,4 +1,4 @@
-package com.example.model
+package com.lastmile.models
 
 import kotlinx.serialization.Serializable
 
@@ -48,5 +48,3 @@ class Schedule(val id: Int, val deliveries: List<Delivery>) {
         return deliveries.size
     }
 }
-
-val scheduleStorage = mutableListOf<Schedule>()
