@@ -1,6 +1,6 @@
-import com.example.model.Delivery
-import com.example.model.Schedule
-import com.example.model.Status
+import com.lastmile.models.Delivery
+import com.lastmile.models.Schedule
+import com.lastmile.models.Status
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull

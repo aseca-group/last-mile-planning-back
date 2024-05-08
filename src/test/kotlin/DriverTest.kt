@@ -1,4 +1,4 @@
-import com.example.model.Driver
+import com.lastmile.models.Driver
 import junit.framework.TestCase.assertEquals
 import kotlin.test.Test
 

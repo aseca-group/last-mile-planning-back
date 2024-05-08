@@ -1,4 +1,4 @@
-package com.example.routes
+package com.lastmile.routes
 
 
 import io.ktor.server.routing.*
