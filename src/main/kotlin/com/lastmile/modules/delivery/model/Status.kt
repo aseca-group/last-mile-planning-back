@@ -1,4 +1,4 @@
-package com.lastmile.modules.driver.model
+package com.lastmile.modules.delivery.model
 
 enum class Status {
     PENDING,

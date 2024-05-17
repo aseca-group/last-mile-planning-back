@@ -3,7 +3,7 @@ package com.lastmile.modules.delivery.dao
 import com.lastmile.db.DatabaseSingleton.dbQuery
 import com.lastmile.modules.delivery.model.Deliveries
 import com.lastmile.modules.delivery.model.Delivery
-import com.lastmile.modules.driver.model.Status
+import com.lastmile.modules.delivery.model.Status
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import java.time.LocalDateTime

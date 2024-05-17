@@ -1,9 +1,8 @@
 package com.lastmile.modules.delivery.dao
 
 import com.lastmile.modules.delivery.model.Delivery
-import com.lastmile.modules.driver.model.Status
+import com.lastmile.modules.delivery.model.Status
 import java.time.LocalDateTime
-import java.util.*
 
 interface DeliveryDAOFacade {
     suspend fun createDelivery(date: LocalDateTime, status: Status, driverId: Int): Delivery?

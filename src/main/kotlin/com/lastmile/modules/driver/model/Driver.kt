@@ -2,7 +2,6 @@ package com.lastmile.modules.driver.model
 
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.dao.id.IntIdTable
-import org.jetbrains.exposed.sql.*
 
 @Serializable
 data class Driver(
