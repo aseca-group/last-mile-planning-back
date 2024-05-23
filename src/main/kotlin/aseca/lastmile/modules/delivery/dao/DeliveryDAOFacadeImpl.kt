@@ -9,29 +9,29 @@ import java.time.LocalDateTime
 class DeliveryDAOFacadeImpl : DeliveryDAOFacade {
     override suspend fun createDelivery(deliveryDTO: CreateDeliveryDTO): Delivery? = dbQuery {
         val insertStatement = Deliveries.insert {
-            it[Deliveries.date] = LocalDateTime.now()
-            it[Deliveries.status] = deliveryDTO.status
-            it[Deliveries.addressId] = deliveryDTO.addressId
-            it[Deliveries.driverId] = deliveryDTO.driverId
+            it[date] = LocalDateTime.now().toString()
+            it[status] = deliveryDTO.status
+            it[addressId] = deliveryDTO.addressId
+            it[driverId] = deliveryDTO.driverId
 
         }
         insertStatement.resultedValues?.singleOrNull()?.let(::resultRowToDelivery)
     }
 
-    override suspend fun getDelivery(id: Int): DeliveryDTO? = dbQuery {
-        Deliveries.select { Deliveries.id eq id }.map(::resultRowToDeliveryDTO).singleOrNull()
+    override suspend fun getDelivery(id: Int): Delivery? = dbQuery {
+        Deliveries.select { Deliveries.id eq id }.map(::resultRowToDelivery).singleOrNull()
     }
 
-    override suspend fun getAllDeliveries(): List<DeliveryDTO> = dbQuery {
-        Deliveries.selectAll().map(::resultRowToDeliveryDTO)
+    override suspend fun getAllDeliveries(): List<Delivery> = dbQuery {
+        Deliveries.selectAll().map(::resultRowToDelivery)
     }
 
     override suspend fun deleteDelivery(id: Int): Boolean = dbQuery {
         Deliveries.deleteWhere { Deliveries.id eq id } > 0
     }
 
-    override suspend fun getDeliveriesByDriverId(driverId: Int): List<DeliveryDTO> = dbQuery {
-        Deliveries.select { Deliveries.driverId eq driverId }.map(::resultRowToDeliveryDTO)
+    override suspend fun getDeliveriesByDriverId(driverId: Int): List<Delivery> = dbQuery {
+        Deliveries.select { Deliveries.driverId eq driverId }.map(::resultRowToDelivery)
     }
 
     override suspend fun updateDeliveryStatus(id: Int, status: Status): Boolean = dbQuery {
@@ -49,16 +49,6 @@ class DeliveryDAOFacadeImpl : DeliveryDAOFacade {
             driverId = row[Deliveries.driverId]
         )
     }
-
-    private fun resultRowToDeliveryDTO(row: ResultRow): DeliveryDTO {
-        return DeliveryDTO(
-            id = row[Deliveries.id].value,
-            status = row[Deliveries.status],
-            addressId = row[Deliveries.addressId],
-            driverId = row[Deliveries.driverId]
-        )
-    }
-
 }
 
 val deliveryDao: DeliveryDAOFacade = DeliveryDAOFacadeImpl()
