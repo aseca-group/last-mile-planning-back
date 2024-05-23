@@ -1,7 +1,7 @@
-package com.lastmile.db
+package aseca.lastmile.db
 
-import com.lastmile.modules.delivery.model.Deliveries
-import com.lastmile.modules.driver.model.Drivers
+import aseca.lastmile.modules.delivery.model.Deliveries
+import aseca.lastmile.modules.driver.model.Drivers
 import kotlinx.coroutines.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.*
@@ -13,8 +13,8 @@ object DatabaseSingleton {
         val jdbcURL = "jdbc:h2:file:./build/db"
         val database = Database.connect(jdbcURL, driverClassName)
         transaction(database) {
-            SchemaUtils.create(Drivers)
-            SchemaUtils.create(Deliveries)
+            SchemaUtils.drop(Drivers, Deliveries)
+            SchemaUtils.create(Drivers, Deliveries)
         }
     }
 

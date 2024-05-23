@@ -1,7 +1,8 @@
-package com.lastmile.modules.driver.controller
+package aseca.lastmile.modules.driver.controller
 
-import com.lastmile.modules.driver.dao.driverDao
-import com.lastmile.modules.driver.model.Driver
+import aseca.lastmile.modules.driver.dao.driverDao
+import aseca.lastmile.modules.driver.model.CreateDriverDTO
+import aseca.lastmile.modules.driver.model.Driver
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
@@ -26,8 +27,8 @@ fun Route.driver() {
             }
         }
         post {
-            val driver = call.receive<Driver>()
-            val createdDriver = driverDao.createDriver(driver.name)
+            val driverDTO = call.receive<CreateDriverDTO>()
+            val createdDriver = driverDao.createDriver(driverDTO)
             if (createdDriver == null) {
                 call.respondText("Failed to create driver")
             } else {

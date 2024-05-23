@@ -1,7 +1,10 @@
-package com.lastmile.modules.delivery.controller
+package aseca.lastmile.modules.delivery.controller
 
-import com.lastmile.modules.delivery.dao.deliveryDao
-import com.lastmile.modules.delivery.model.Delivery
+import aseca.lastmile.modules.client.OrderDTO
+import aseca.lastmile.modules.delivery.dao.deliveryDao
+import aseca.lastmile.modules.delivery.model.CreateDeliveryDTO
+import aseca.lastmile.modules.delivery.model.Delivery
+import aseca.lastmile.modules.delivery.model.Status
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
@@ -26,12 +29,12 @@ fun Route.delivery() {
             }
         }
         post {
-            val delivery = call.receive<Delivery>()
-            val createdDelivery = deliveryDao.createDelivery(delivery.date, delivery.status, delivery.driverId)
+            val orderDTO = call.receive<OrderDTO>()
+            val createdDelivery = deliveryDao.createDelivery(CreateDeliveryDTO(Status.PENDING, orderDTO.addressId, 1))
             if (createdDelivery == null) {
                 call.respondText("Failed to create delivery")
             } else {
-                call.respond(createdDelivery)
+                call.respond(createdDelivery.id)
             }
         }
         delete("/{id}") {

@@ -1,15 +1,16 @@
-package com.lastmile.modules.driver.dao
+package aseca.lastmile.modules.driver.dao
 
-import com.lastmile.db.DatabaseSingleton.dbQuery
-import com.lastmile.modules.driver.model.Driver
-import com.lastmile.modules.driver.model.Drivers
+import aseca.lastmile.db.DatabaseSingleton.dbQuery
+import aseca.lastmile.modules.driver.model.CreateDriverDTO
+import aseca.lastmile.modules.driver.model.Driver
+import aseca.lastmile.modules.driver.model.Drivers
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 class DriverDAOFacadeImpl : DriverDAOFacade {
-    override suspend fun createDriver(name: String): Driver? = dbQuery {
+    override suspend fun createDriver(driverDTO: CreateDriverDTO): Driver? = dbQuery {
         val insertStatement = Drivers.insert {
-            it[Drivers.name] = name
+            it[Drivers.name] = driverDTO.name
         }
         insertStatement.resultedValues?.singleOrNull()?.let(::resultRowToDriver)
     }

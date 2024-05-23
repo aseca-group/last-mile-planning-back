@@ -1,4 +1,4 @@
-package com.lastmile.modules.driver.model
+package aseca.lastmile.modules.driver.model
 
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.dao.id.IntIdTable
