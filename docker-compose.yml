@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "8081:8081"
+    volumes:
+      - h2-data:/app/build/db
+    depends_on:
+      - h2
+
+  h2:
+    image: oscarfonts/h2
+    ports:
+      - "9092:9092"
+    volumes:
+      - h2-data:/opt/h2-data
+
+volumes:
+  h2-data:
