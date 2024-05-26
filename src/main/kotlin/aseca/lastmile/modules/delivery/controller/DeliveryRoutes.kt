@@ -34,7 +34,7 @@ fun Route.delivery() {
             if (createdDelivery == null) {
                 call.respondText("Failed to create delivery")
             } else {
-                call.respond(createdDelivery)
+                call.respond(createdDelivery.id)
             }
         }
         delete("/{id}") {
