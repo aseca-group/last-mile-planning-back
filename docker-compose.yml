@@ -9,6 +9,8 @@ services:
       - h2-data:/app/build/db
     depends_on:
       - h2
+    networks:
+      - control-tower_some-net
 
   h2:
     image: oscarfonts/h2
@@ -16,6 +18,12 @@ services:
       - "9092:9092"
     volumes:
       - h2-data:/opt/h2-data
+    networks:
+      - control-tower_some-net
+
+networks:
+  control-tower_some-net:
+    external: true
 
 volumes:
   h2-data:
