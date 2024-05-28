@@ -28,7 +28,7 @@ class HttpClientService {
     @Serializable
     data class DeliveryIdWrapper(val deliveryId: Int)
 
-    suspend fun removeReservedStock(deliveryId: Int) {
+    suspend fun removeStock(deliveryId: Int) {
         val url = "http://control-tower-control-tower-1:8080/inventory/removeReservedStock"
         val response: HttpResponse =
             client.patch(url) {

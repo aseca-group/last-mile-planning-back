@@ -1,5 +1,6 @@
 package aseca.lastmile.modules.delivery.controller
 
+import aseca.lastmile.modules.client.HttpClientService
 import aseca.lastmile.modules.client.OrderDTO
 import aseca.lastmile.modules.delivery.dao.deliveryDao
 import aseca.lastmile.modules.delivery.model.CreateDeliveryDTO
@@ -10,6 +11,9 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import kotlinx.coroutines.runBlocking
+
+val clientService = HttpClientService()
 
 fun Route.delivery() {
     route("/delivery") {
@@ -77,6 +81,7 @@ fun Route.delivery() {
                 val delivery = call.receive<Delivery>()
                 if(delivery.status == Status.COMPLETED) {
                     // remove stock from control tower
+                    runBlocking { clientService.removeStock(delivery.addressId) }
                 }
                 val updated = deliveryDao.updateDeliveryStatus(id, delivery.status)
                 if (updated) {
