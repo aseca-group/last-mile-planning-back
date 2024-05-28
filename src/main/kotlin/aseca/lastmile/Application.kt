@@ -7,6 +7,7 @@ import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.netty.EngineMain
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.server.plugins.cors.routing.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
@@ -19,6 +20,13 @@ fun Application.module() {
     install(ContentNegotiation) {
         json()
     }
+
+    install(CORS) {
+        anyHost() 
+        allowCredentials = true
+        allowNonSimpleContentTypes = true
+    }
+
     routing {
         get("/") {
             call.respondText("Welcome to Last Mile Planning Application")

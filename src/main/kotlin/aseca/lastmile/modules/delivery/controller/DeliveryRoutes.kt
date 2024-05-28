@@ -5,6 +5,7 @@ import aseca.lastmile.modules.delivery.dao.deliveryDao
 import aseca.lastmile.modules.delivery.model.CreateDeliveryDTO
 import aseca.lastmile.modules.delivery.model.Delivery
 import aseca.lastmile.modules.delivery.model.Status
+import aseca.lastmile.modules.driver.dao.driverDao
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
@@ -30,11 +31,21 @@ fun Route.delivery() {
         }
         post {
             val orderDTO = call.receive<OrderDTO>()
-            val createdDelivery = deliveryDao.createDelivery(CreateDeliveryDTO(Status.PENDING, orderDTO.addressId, 1))
-            if (createdDelivery == null) {
-                call.respondText("Failed to create delivery")
+            // Get all existing drivers from the database
+            val allDrivers = driverDao.getAllDrivers()
+
+            if (allDrivers.isEmpty()) {
+                call.respondText("Error: No drivers available to assign the delivery.")
             } else {
-                call.respond(createdDelivery.id)
+                // Choose a random driver ID from the list of existing drivers
+                val randomDriverId = allDrivers.random().id
+
+                val createdDelivery = deliveryDao.createDelivery(CreateDeliveryDTO(Status.PENDING, orderDTO.addressId, randomDriverId))
+                if (createdDelivery == null) {
+                    call.respondText("Failed to create delivery")
+                } else {
+                    call.respond(createdDelivery.id)
+                }
             }
         }
         delete("/{id}") {
