@@ -75,6 +75,9 @@ fun Route.delivery() {
                 call.respondText("Invalid ID")
             } else {
                 val delivery = call.receive<Delivery>()
+                if(delivery.status == Status.COMPLETED) {
+                    // remove stock from control tower
+                }
                 val updated = deliveryDao.updateDeliveryStatus(id, delivery.status)
                 if (updated) {
                     call.respondText("Delivery $id updated")
