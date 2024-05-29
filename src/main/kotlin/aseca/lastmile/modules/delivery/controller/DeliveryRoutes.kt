@@ -81,7 +81,7 @@ fun Route.delivery() {
                 val delivery = call.receive<Delivery>()
                 if(delivery.status == Status.COMPLETED) {
                     // remove stock from control tower
-                    runBlocking { clientService.removeStock(delivery.addressId) }
+                    runBlocking { clientService.removeStock(delivery.id) }
                 }
                 val updated = deliveryDao.updateDeliveryStatus(id, delivery.status)
                 if (updated) {
