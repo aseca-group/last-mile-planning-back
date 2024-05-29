@@ -10,6 +10,8 @@ import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.plugins.cors.routing.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.http.HttpMethod
+
 
 fun main(args: Array<String>) {
     EngineMain.main(args)
@@ -25,6 +27,13 @@ fun Application.module() {
         anyHost() 
         allowCredentials = true
         allowNonSimpleContentTypes = true
+        allowMethod(HttpMethod.Options)
+        allowMethod(HttpMethod.Get)
+        allowMethod(HttpMethod.Post)
+        allowMethod(HttpMethod.Put)
+        allowMethod(HttpMethod.Delete)
+        allowMethod(HttpMethod.Patch)
+        allowHeader("Content-Type")
     }
 
     routing {
