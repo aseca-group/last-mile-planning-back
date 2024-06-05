@@ -41,10 +41,10 @@ fun Route.delivery() {
             if (allDrivers.isEmpty()) {
                 call.respondText("Error: No drivers available to assign the delivery.")
             } else {
-                // Choose a random driver ID from the list of existing drivers
-                val randomDriverId = allDrivers.random().id
+                // Choose the driver id by looking for the driver that is present in the least number of deliveries
+                val driverId = allDrivers.minByOrNull { driver -> deliveryDao.getDeliveriesByDriverId(driver.id).size }!!.id
 
-                val createdDelivery = deliveryDao.createDelivery(CreateDeliveryDTO(Status.PENDING, orderDTO.addressId, randomDriverId))
+                val createdDelivery = deliveryDao.createDelivery(CreateDeliveryDTO(Status.PENDING, orderDTO.addressId, driverId))
                 if (createdDelivery == null) {
                     call.respondText("Failed to create delivery")
                 } else {
