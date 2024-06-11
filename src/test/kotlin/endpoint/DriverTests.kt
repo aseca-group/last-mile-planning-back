@@ -15,6 +15,7 @@ import kotlinx.serialization.json.*
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.junit.After
 import org.junit.Before
 import kotlin.test.*
 
@@ -31,6 +32,20 @@ class DriverEndpointTest {
         }
     }
 
+    @After
+    fun end() {
+        transaction {
+            SchemaUtils.drop(Deliveries, Drivers)
+        }
+    }
+
+    private suspend fun postDriver(client: HttpClient, name: String): HttpResponse {
+        return client.post("/driver") {
+            contentType(ContentType.Application.Json)
+            setBody(CreateDriverDTO(name))
+        }
+    }
+
     private fun ApplicationTestBuilder.httpClient(): HttpClient {
         val client = createClient {
             install(ContentNegotiation) {
@@ -44,11 +59,7 @@ class DriverEndpointTest {
     fun `test creating a driver`() = testApplication {
         val client = httpClient()
 
-        val response = client.post("/driver") {
-            contentType(ContentType.Application.Json)
-            setBody(CreateDriverDTO("Pipo gorosito"))
-        }
-
+        val response = postDriver(client, "Pipo gorosito")
         val driver = Json.decodeFromString<Driver>(response.bodyAsText())
 
         assertEquals(HttpStatusCode.OK, response.status)
@@ -59,10 +70,7 @@ class DriverEndpointTest {
     fun `test getting a driver`() = testApplication {
         val client = httpClient()
 
-        val response = client.post("/driver") {
-            contentType(ContentType.Application.Json)
-            setBody(CreateDriverDTO("Pipo gorosito"))
-        }
+        val response = postDriver(client, "Pipo gorosito")
 
         val driver = Json.decodeFromString<Driver>(response.bodyAsText())
 
@@ -78,10 +86,14 @@ class DriverEndpointTest {
     fun `test getting all drivers`() = testApplication {
         val client = httpClient()
 
+        postDriver(client, "Pipo gorosito")
+        postDriver(client, "Tista driver")
+
         val response = client.get("/driver")
 
         assertEquals(HttpStatusCode.OK, response.status)
-        assertNotNull(response.bodyAsText())
+        val drivers: List<Driver> = Json.decodeFromString(response.bodyAsText())
+        assertEquals(2, drivers.size)
     }
 
     @Test
@@ -99,5 +111,8 @@ class DriverEndpointTest {
 
         assertEquals(HttpStatusCode.OK, deleteResponse.status)
         assertEquals("Driver ${driver.id} deleted", deleteResponse.bodyAsText())
+
+        val nonDriver = client.get("/driver/${driver.id}")
+        assertEquals(nonDriver.bodyAsText(), "Driver not found")
     }
 }
