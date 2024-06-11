@@ -16,6 +16,7 @@ import kotlinx.serialization.json.*
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.junit.After
 import org.junit.Before
 import kotlin.test.*
 
@@ -33,6 +34,13 @@ class DeliveryEndpointTest {
         }
     }
 
+    @After
+    fun end() {
+        transaction {
+            SchemaUtils.drop(Deliveries, Drivers)
+        }
+    }
+
     private fun ApplicationTestBuilder.httpClient(): HttpClient {
         val client = createClient {
             install(ContentNegotiation) {
@@ -42,8 +50,23 @@ class DeliveryEndpointTest {
         return client
     }
 
+    private suspend fun postDriver(client: HttpClient, name: String): Driver {
+        val response = client.post("/driver") {
+            contentType(ContentType.Application.Json)
+            setBody(CreateDriverDTO(name))
+        }
+        return Json.decodeFromString(response.bodyAsText())
+    }
+
+    private suspend fun postOrder(client: HttpClient, addressId: Int): HttpResponse{
+        return client.post("/delivery") {
+            contentType(ContentType.Application.Json)
+            setBody(OrderDTO(addressId))
+        }
+    }
+
     @Test
-    fun testPostDelivery() = testApplication {
+    fun test001_PostDelivery() = testApplication {
         val client = httpClient()
 
         // Create a driver to assign to the delivery
@@ -65,14 +88,11 @@ class DeliveryEndpointTest {
 
 
     @Test
-    fun testGetDelivery() = testApplication {
+    fun test002_GetDelivery() = testApplication {
         val client = httpClient()
 
         postDriver(client, "Pipo gorosito")
-        client.post("/delivery") {
-            contentType(ContentType.Application.Json)
-            setBody(OrderDTO(1))
-        }
+        postOrder(client, 1)
 
         val response = client.get("/delivery/1")
         val delivery = Json.decodeFromString<Delivery>(response.bodyAsText())
@@ -85,14 +105,11 @@ class DeliveryEndpointTest {
     }
 
     @Test
-    fun testGetDeliveriesByDriver() = testApplication {
+    fun test003_GetDeliveriesByDriver() = testApplication {
         val client = httpClient()
 
         postDriver(client, "Pipo gorosito")
-        client.post("/delivery") {
-            contentType(ContentType.Application.Json)
-            setBody(OrderDTO(1))
-        }
+        postOrder(client, 1)
 
         val response = client.get("/delivery/driver/1")
         val deliveries = Json.decodeFromString<List<Delivery>>(response.bodyAsText())
@@ -103,14 +120,11 @@ class DeliveryEndpointTest {
     }
 
     @Test
-    fun testGetAllDeliveries() = testApplication {
+    fun test004_GetAllDeliveries() = testApplication {
         val client = httpClient()
 
         postDriver(client, "Pipo gorosito")
-        client.post("/delivery") {
-            contentType(ContentType.Application.Json)
-            setBody(OrderDTO(1))
-        }
+        postOrder(client, 1)
 
         val response = client.get("/delivery")
         val deliveries = Json.decodeFromString<List<Delivery>>(response.bodyAsText())
@@ -122,30 +136,27 @@ class DeliveryEndpointTest {
 
 
     @Test
-    fun testDeleteDelivery() = testApplication {
+    fun test005_DeleteDelivery() = testApplication {
         val client = httpClient()
 
         postDriver(client, "Pipo gorosito")
-        client.post("/delivery") {
-            contentType(ContentType.Application.Json)
-            setBody(OrderDTO(1))
-        }
+        postOrder(client, 1)
 
         val response = client.delete("/delivery/1")
 
         TestCase.assertEquals(HttpStatusCode.OK, response.status)
         assertEquals("Delivery 1 deleted", response.bodyAsText())
+
+        val nonDelivery = client.get("/delivery/1")
+        assertEquals(nonDelivery.bodyAsText(), "Delivery not found")
     }
 
     @Test
-    fun testUpdateDeliveryStatus() = testApplication {
+    fun test006_UpdateDeliveryStatus() = testApplication {
         val client = httpClient()
 
         postDriver(client, "Pipo gorosito")
-        client.post("/delivery") {
-            contentType(ContentType.Application.Json)
-            setBody(OrderDTO(1))
-        }
+        postOrder(client, 1)
 
         val response = client.put("/delivery/1") {
             contentType(ContentType.Application.Json)
@@ -161,36 +172,23 @@ class DeliveryEndpointTest {
     }
 
     @Test
-    fun testAssignDeliveryToDriverWithFewestDeliveries() = testApplication {
+    fun test007_AssignDeliveryToDriverWithFewestDeliveries() = testApplication {
         val client = httpClient()
 
-        // Create two drivers
-        val driver1 = postDriver(client, "Driver 1")
-        val driver2 = postDriver(client, "Driver 2")
+        val driver1 = postDriver(client, "Pipo gorosito")
+        val driver2 = postDriver(client, "Tista driver")
 
-        // Create a delivery for driver 1 to ensure it has more deliveries
         deliveryDao.createDelivery(CreateDeliveryDTO(Status.PENDING, 1, driver1.id))
+        deliveryDao.createDelivery(CreateDeliveryDTO(Status.PENDING, 2, driver1.id))
+        deliveryDao.createDelivery(CreateDeliveryDTO(Status.PENDING, 3, driver1.id))
 
-        // Create a new delivery
-        val response = client.post("/delivery") {
-            contentType(ContentType.Application.Json)
-            setBody(OrderDTO(2))
-        }
-
+        val response = postOrder(client, 4)
         val deliveryId = Json.decodeFromString<Int>(response.bodyAsText())
-        val delivery = deliveryDao.getDelivery(deliveryId)
+        val deliveryResponse = client.get("/delivery/${deliveryId}")
+        val delivery = Json.decodeFromString<Delivery>(deliveryResponse.bodyAsText())
 
         TestCase.assertEquals(HttpStatusCode.OK, response.status)
         assertNotNull(delivery)
         assertEquals(driver2.id, delivery.driverId)
     }
-
-    private suspend fun postDriver(client: HttpClient, name: String): Driver {
-        val response = client.post("/driver") {
-            contentType(ContentType.Application.Json)
-            setBody(CreateDriverDTO(name))
-        }
-        return Json.decodeFromString(response.bodyAsText())
-    }
-
 }
