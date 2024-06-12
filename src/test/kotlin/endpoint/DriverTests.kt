@@ -38,21 +38,6 @@ class DriverEndpointTest {
         }
     }
 
-    private suspend fun postDriver(client: HttpClient, name: String): HttpResponse {
-        return client.post("/driver") {
-            contentType(ContentType.Application.Json)
-            setBody(CreateDriverDTO(name))
-        }
-    }
-
-    private fun ApplicationTestBuilder.httpClient(): HttpClient {
-        val client = createClient {
-            install(ContentNegotiation) {
-                json()
-            }
-        }
-        return client
-    }
 
     @Test
     fun `test creating a driver`() = testApplication {
@@ -114,4 +99,21 @@ class DriverEndpointTest {
         val nonDriver = client.get("/driver/${driver.id}")
         assertEquals(nonDriver.bodyAsText(), "Driver not found")
     }
+
+    private suspend fun postDriver(client: HttpClient, name: String): HttpResponse {
+        return client.post("/driver") {
+            contentType(ContentType.Application.Json)
+            setBody(CreateDriverDTO(name))
+        }
+    }
+
+    private fun ApplicationTestBuilder.httpClient(): HttpClient {
+        val client = createClient {
+            install(ContentNegotiation) {
+                json()
+            }
+        }
+        return client
+    }
+    
 }

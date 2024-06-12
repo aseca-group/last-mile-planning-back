@@ -40,29 +40,6 @@ class DeliveryEndpointTest {
         }
     }
 
-    private fun ApplicationTestBuilder.httpClient(): HttpClient {
-        val client = createClient {
-            install(ContentNegotiation) {
-                json()
-            }
-        }
-        return client
-    }
-
-    private suspend fun postDriver(client: HttpClient, name: String): Driver {
-        val response = client.post("/driver") {
-            contentType(ContentType.Application.Json)
-            setBody(CreateDriverDTO(name))
-        }
-        return Json.decodeFromString(response.bodyAsText())
-    }
-
-    private suspend fun postOrder(client: HttpClient, addressId: Int): HttpResponse{
-        return client.post("/delivery") {
-            contentType(ContentType.Application.Json)
-            setBody(OrderDTO(addressId))
-        }
-    }
 
     @Test
     fun test001_PostDelivery() = testApplication {
@@ -190,5 +167,30 @@ class DeliveryEndpointTest {
         assertNotNull(delivery)
         assertEquals(driver2.id, delivery.driverId)
     }
+
+    private fun ApplicationTestBuilder.httpClient(): HttpClient {
+        val client = createClient {
+            install(ContentNegotiation) {
+                json()
+            }
+        }
+        return client
+    }
+
+    private suspend fun postDriver(client: HttpClient, name: String): Driver {
+        val response = client.post("/driver") {
+            contentType(ContentType.Application.Json)
+            setBody(CreateDriverDTO(name))
+        }
+        return Json.decodeFromString(response.bodyAsText())
+    }
+
+    private suspend fun postOrder(client: HttpClient, addressId: Int): HttpResponse{
+        return client.post("/delivery") {
+            contentType(ContentType.Application.Json)
+            setBody(OrderDTO(addressId))
+        }
+    }
+
 }
 
