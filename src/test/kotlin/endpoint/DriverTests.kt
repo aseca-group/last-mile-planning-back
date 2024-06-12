@@ -1,6 +1,4 @@
-
 package endpoint
-
 import aseca.lastmile.modules.delivery.model.Deliveries
 import aseca.lastmile.modules.driver.model.CreateDriverDTO
 import aseca.lastmile.modules.driver.model.Driver
